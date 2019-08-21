@@ -1,0 +1,32 @@
+{
+  "name": "drench",
+  "version": "1.0.0",
+  "description": "",
+  "devDependencies": {
+    "browser-sync": "^2.17.6",
+    "common-js": "^0.3.8",
+    "jquery": "^3.4.1",
+    "node-sass": "^4.12.0",
+    "nodemon": "^1.9.2",
+    "npm-run-all": "^3.1.1",
+    "typescript": "^3.5.3",
+    "webpack": "^1.13.3"
+  },
+  "scripts": {
+    "serve": "browser-sync start --config bs-config.js",
+    "build:css": "node-sass --include-path src/scss src/scss/default.scss src/css/default.css",
+    "deploy:static-resources": "npm-run-all build:css",
+    "watch:static-resources": "nodemon --verbose -w src/scss/ --on-change-only -d 1 -e \"scss\" --exec \"npm run deploy:static-resources\"",
+    "deploy:tsc": "tsc -p ./src/ts",
+    "watch:tsc": "nodemon --verbose -w src/ts/ --on-change-only -d 1 -e ts --exec \"npm run deploy:tsc\"",
+    "deploy:webpack": "webpack src/js/app.js src/js/app_bundle.js",
+    "watch:webpack": "nodemon --verbose -w src/js/app.js --on-change-only -d 1 --exec \"npm run deploy:webpack\"",
+    "watch": "npm-run-all -s -p watch:tsc watch:static-resources watch:webpack"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/jquery": "^3.3.31"
+  }
+}

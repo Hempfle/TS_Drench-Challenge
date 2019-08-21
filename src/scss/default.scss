@@ -1,0 +1,77 @@
+.tile {
+    height: 18px;
+    width: 18px;
+}
+
+.red-tile {
+    background-color: red;
+}
+.blue-tile {
+    background-color: blue;
+}
+.green-tile {
+    background-color: green;
+}
+.brown-tile {
+    background-color: brown;
+}
+.purple-tile {
+    background-color: purple;
+}
+.yellow-tile {
+    background-color: yellow;
+}
+
+.row {
+    display:inline-block;
+}
+
+#control {
+    display: inline-block;
+    margin-left: 10%;
+}
+
+#playing-field {
+    display: inline-block;
+}
+
+.controlButton {
+    width: 50px;
+    height: 50px;
+    border-radius: 100%;
+    border:1px solid transparent;
+    cursor: pointer;
+    outline:none;
+}
+
+.controlButton:hover {
+    border:1px solid;
+}
+.controlButton:active {
+    position:relative;
+    top:1px;
+}
+
+#redButton {
+    background: red;
+}
+
+#blueButton {
+    background: blue;
+}
+
+#brownButton {
+    background: brown;
+}
+
+#greenButton {
+    background: green;
+}
+
+#yellowButton {
+    background: yellow;
+}
+
+#purpleButton {
+    background: purple;
+}
