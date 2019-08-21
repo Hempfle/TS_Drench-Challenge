@@ -52,41 +52,53 @@
 	//red, blue, yellow, green, brown, purple
 	$(document).ready(function () {
 	    $("#headline").text('Drench');
-	    //board generator
 	    var board = new Board_1.default();
-	    var boardData = board.tiles;
+	    var view = new View(board);
 	    var buttons = new button_1.default(board);
-	    var count = 1;
-	    for (var _i = 0, boardData_1 = boardData; _i < boardData_1.length; _i++) {
-	        var row = boardData_1[_i];
-	        $("#playing-field").append("<div class='row row" + count + "'>");
-	        var rowName = 'row' + count;
-	        count = count + 1;
-	        for (var _a = 0, row_1 = row; _a < row_1.length; _a++) {
-	            var tile = row_1[_a];
-	            switch (tile) {
-	                case 0:
-	                    $('.' + rowName).append("<div class='tile red-tile'>");
-	                    break;
-	                case 1:
-	                    $('.' + rowName).append("<div class='tile blue-tile'>");
-	                    break;
-	                case 2:
-	                    $('.' + rowName).append("<div class='tile yellow-tile'>");
-	                    break;
-	                case 3:
-	                    $('.' + rowName).append("<div class='tile green-tile'>");
-	                    break;
-	                case 4:
-	                    $('.' + rowName).append("<div class='tile brown-tile'>");
-	                    break;
-	                case 5:
-	                    $('.' + rowName).append("<div class='tile purple-tile'>");
-	                    break;
+	});
+	var View = /** @class */ (function () {
+	    function View(board) {
+	        this.board = board;
+	        this.updateView(this.board);
+	        board.addView(this);
+	    }
+	    View.prototype.updateView = function (board) {
+	        $("#playing-field").empty();
+	        var count = 1;
+	        var boardData = this.board.tiles;
+	        for (var _i = 0, boardData_1 = boardData; _i < boardData_1.length; _i++) {
+	            var row = boardData_1[_i];
+	            $("#playing-field").append("<div class='row row" + count + "'>");
+	            var rowName = 'row' + count;
+	            count = count + 1;
+	            for (var _a = 0, row_1 = row; _a < row_1.length; _a++) {
+	                var tile = row_1[_a];
+	                switch (tile.color) {
+	                    case 0:
+	                        $('.' + rowName).append("<div class='tile red-tile'>");
+	                        break;
+	                    case 1:
+	                        $('.' + rowName).append("<div class='tile blue-tile'>");
+	                        break;
+	                    case 2:
+	                        $('.' + rowName).append("<div class='tile yellow-tile'>");
+	                        break;
+	                    case 3:
+	                        $('.' + rowName).append("<div class='tile green-tile'>");
+	                        break;
+	                    case 4:
+	                        $('.' + rowName).append("<div class='tile brown-tile'>");
+	                        break;
+	                    case 5:
+	                        $('.' + rowName).append("<div class='tile purple-tile'>");
+	                        break;
+	                }
 	            }
 	        }
-	    }
-	});
+	    };
+	    return View;
+	}());
+	exports.default = View;
 	//# sourceMappingURL=app.js.map
 
 /***/ }),
@@ -10703,19 +10715,62 @@
 	    function Board() {
 	        this.tiles = [];
 	        for (var i = 0; i < 50; i++) {
-	            this.tiles.push(generateRandomRow());
+	            this.tiles.push(this.generateRandomRow(i));
 	        }
+	        this.tiles[0][0].active = true;
+	        this.view = null;
 	    }
+	    Board.prototype.addView = function (view) {
+	        this.view = view;
+	    };
+	    Board.prototype.generateRandomRow = function (rowNumber) {
+	        var row = [];
+	        for (var j = 0; j < 50; j++) {
+	            row.push(new Tile(Math.floor(Math.random() * 6), rowNumber, j, this));
+	        }
+	        return row;
+	    };
+	    Board.prototype.changeRequest = function (requestedColor) {
+	        //get active Tiles and set to color
+	        for (var i = 0; i < 50; i++) {
+	            for (var j = 0; j < 50; j++) {
+	                if (this.tiles[i][j].active) {
+	                    this.tiles[i][j].color = requestedColor;
+	                    if (this.view != null) {
+	                        this.view.updateView(this);
+	                    }
+	                }
+	            }
+	        }
+	    };
 	    return Board;
 	}());
 	exports.default = Board;
-	function generateRandomRow() {
-	    var row = [];
-	    for (var i = 0; i < 50; i++) {
-	        row.push(Math.floor(Math.random() * 6));
+	var Tile = /** @class */ (function () {
+	    function Tile(color, x, y, board) {
+	        this.color = color;
+	        this.x = x;
+	        this.y = y;
+	        this.board = board;
+	        this.active = false;
 	    }
-	    return row;
-	}
+	    Tile.prototype.getNeighbors = function (tile) {
+	        var neighbors = [];
+	        if (tile.x <= 49) {
+	            neighbors.push(this.board.tiles[tile.x + 1][tile.y]);
+	        }
+	        if (tile.x >= 0) {
+	            neighbors.push(this.board.tiles[tile.x - 1][tile.y]);
+	        }
+	        if (tile.y <= 49) {
+	            neighbors.push(this.board.tiles[tile.x][tile.y + 1]);
+	        }
+	        if (tile.y >= 0) {
+	            neighbors.push(this.board.tiles[tile.x][tile.y - 1]);
+	        }
+	    };
+	    return Tile;
+	}());
 	//# sourceMappingURL=Board.js.map
 
 /***/ }),
@@ -10729,26 +10784,26 @@
 	        this.buttons = [];
 	        //red, blue, yellow, green, brown, purple
 	        this.board = board;
-	        this.buttons.push(new Button('redButton', 0));
-	        this.buttons.push(new Button('blueButton', 1));
-	        this.buttons.push(new Button('greenButton', 3));
-	        this.buttons.push(new Button('yellowButton', 2));
-	        this.buttons.push(new Button('brownButton', 4));
-	        this.buttons.push(new Button('purpleButton', 5));
+	        this.buttons.push(new Button('redButton', 0, this));
+	        this.buttons.push(new Button('blueButton', 1, this));
+	        this.buttons.push(new Button('greenButton', 3, this));
+	        this.buttons.push(new Button('yellowButton', 2, this));
+	        this.buttons.push(new Button('brownButton', 4, this));
+	        this.buttons.push(new Button('purpleButton', 5, this));
 	    }
 	    return ButtonRow;
 	}());
 	exports.default = ButtonRow;
 	var Button = /** @class */ (function () {
-	    function Button(id, color) {
+	    function Button(id, color, buttonRow) {
 	        var _this = this;
 	        var btn = document.getElementById(id);
 	        this.color = color;
+	        this.buttonRow = buttonRow;
 	        btn.addEventListener("click", function (e) { return _this.buttonPressed(_this.color); });
 	    }
 	    Button.prototype.buttonPressed = function (color) {
-	        console.log("Button " + color + " pressed!");
-	        var currentTiles = this.board.tiles;
+	        this.buttonRow.board.changeRequest(color);
 	    };
 	    return Button;
 	}());
